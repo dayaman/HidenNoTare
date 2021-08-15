@@ -4,4 +4,4 @@
 
 ## [日本語版](./recipe.md)
 
-## [TypeScript 版](./typescript/recipe.md)
+## [TypeScript 版](./typescript/README.md)
