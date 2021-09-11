@@ -11,7 +11,10 @@ class Material:
         self.note = note
 
     def divisions(self, part: int) -> List[Material]:
-        return [Material(f"{self.name} (1/{part})", f"{self.amount} (1/{part})", self.note)] * part
+        ret = []
+        for _ in range(part):
+            ret.append(Material(f"{self.name} (1/{part})", f"{self.amount} (1/{part})", self.note))
+        return ret
 
 
 def sleep(seconds: int) -> None:
@@ -30,7 +33,7 @@ class Container:
 
     def put(self, materials: List[Material]) -> None:
         self.materials.extend(materials)
-        print(f"{', '.join(map(lambda m: m.name, self.materials))} を {self.name} に追加した")
+        print(f"{', '.join(map(lambda m: m.name, materials))} を {self.name} に追加した")
 
     def push(self, material: Material) -> None:
         self.put([material])
@@ -44,10 +47,12 @@ class Container:
         random.shuffle(self.materials)
         print(f"{self.name} を混ぜた")
 
-    def inspect(self) -> str:
-        br = "\n "
-        return (f"{self.name} には\n {br.join(map(lambda m: f'{m.name} ({m.amount})', self.materials))}"
-                "\nが入っています")
+    def inspect(self) -> None:
+        ret = f"{self.name} には\n"
+        for material in self.materials:
+            ret += f" {material.name} ({material.amount})\n"
+        ret += "が入っている"
+        print(ret)
 
 
 class Pan(Container):
@@ -74,6 +79,9 @@ class Mixer(Container):
 
 
 class Grater:
+    def __init__(self, name: str):
+        self.name = name
+
     def grate(self, material: Material) -> None:
         print(f"{self.name} で {material.name} をすりおろした")
         sleep(120)
@@ -99,7 +107,9 @@ class KitchenWare(TypedDict):
 def cook_hiden_no_tare(material_groups: MaterialGroups, kitchen_ware: KitchenWare) -> Pan:
     A, B, C = material_groups["A"], material_groups["B"], material_groups["C"]
     pan = kitchen_ware["pan"]
+
     print("1. Aをすべて鍋に入れ、弱火で煮込む。焦げ付かないように適度に混ぜる。")
+
     pan.put(A)
     pan.heating("弱火")
     pan.mix()
@@ -107,11 +117,13 @@ def cook_hiden_no_tare(material_groups: MaterialGroups, kitchen_ware: KitchenWar
     if not (sake := next(filter(lambda e: e.name == "日本酒", B), None)):
         raise ZairyoTarinaiError("日本酒")
 
-    B.remove("日本酒")
+    B.remove(sake)
     mixable_ware = kitchen_ware["mixable_ware"]
     print("")
+
     if isinstance(mixable_ware, Mixer):
         print("2-a. Bから酒以外をミキサーにかけ、徐々に酒を足す。")
+
         divisioned_sake = sake.divisions(10)
         mixable_ware.put(B)
         for _ in range(10):
@@ -119,22 +131,29 @@ def cook_hiden_no_tare(material_groups: MaterialGroups, kitchen_ware: KitchenWar
             mixable_ware.mix()
     else:
         print("2-b. ミキサーがない場合は、すりおろして混ぜる。")
+
         bowl, grater = mixable_ware["bowl"], mixable_ware["grater"]
         divisioned_sake = sake.divisions(len(B))
+
         for material in B:
             grater.grate(material)
             bowl.push(divisioned_sake.pop())
             bowl.push(material)
             bowl.mix()
+
     print("\n3. 混ぜたBをAにいれ、弱火で煮込む。")
+
     if isinstance(mixable_ware, Mixer):
         mixable_ware.take_out(pan)
     else:
         bowl.take_out(pan)
     pan.heating("弱火")
+
     print("\n4. 沸騰後15~20分ほど煮込んだら火からおろし、粗熱を取る。")
+
     sleep(15 * 60)
     pan.cooled()
+
     print("\n5. ハチミツを混ぜ入れて完成。")
 
     if not (hachimitu := next(filter(lambda e: e.name == "ハチミツ", C), None)):
