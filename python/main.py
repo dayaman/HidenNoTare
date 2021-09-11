@@ -44,6 +44,11 @@ class Container:
         random.shuffle(self.materials)
         print(f"{self.name} を混ぜた")
 
+    def inspect(self) -> str:
+        br = "\n "
+        return (f"{self.name} には\n {br.join(map(lambda m: f'{m.name} ({m.amount})', self.materials))}"
+                "\nが入っています")
+
 
 class Pan(Container):
     def heating(self, level: Literal["弱火", "中火", "強火"]) -> None:
