@@ -56,7 +56,7 @@ class Container:
         for material in self.materials:
             ret += f" {material.name} ({material.amount})\n"
         ret += "が入っている"
-        gprint(ret)
+        print(ret)
 
 
 class Pan(Container):

@@ -44,6 +44,7 @@ def cook():
     )
 
     pan.take_out(ochawan)
+    ochawan.inspect()
 
     print("うんめ～～～～～！！！！！")
 
