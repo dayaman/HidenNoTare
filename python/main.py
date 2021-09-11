@@ -4,6 +4,10 @@ import random
 from typing import TypedDict, List, Literal, Union
 
 
+def gprint(message: str):
+    print(f"  {message}")
+
+
 class Material:
     def __init__(self, name: str, amount: str, note: str = None):
         self.name = name
@@ -18,7 +22,7 @@ class Material:
 
 
 def sleep(seconds: int) -> None:
-    print(f"{seconds} 秒作業")
+    gprint(f"{seconds} 秒作業")
 
 
 class ZairyoTarinaiError(Exception):
@@ -33,7 +37,7 @@ class Container:
 
     def put(self, materials: List[Material]) -> None:
         self.materials.extend(materials)
-        print(f"{', '.join(map(lambda m: m.name, materials))} を {self.name} に追加した")
+        gprint(f"{', '.join(map(lambda m: m.name, materials))} を {self.name} に追加した")
 
     def push(self, material: Material) -> None:
         self.put([material])
@@ -41,29 +45,29 @@ class Container:
     def take_out(self, container: Container) -> None:
         container.materials.extend(self.materials)
         self.materials.clear()
-        print(f"{self.name} から {container.name} に移し替えた")
+        gprint(f"{self.name} から {container.name} に移し替えた")
 
     def mix(self) -> None:
         random.shuffle(self.materials)
-        print(f"{self.name} を混ぜた")
+        gprint(f"{self.name} を混ぜた")
 
     def inspect(self) -> None:
         ret = f"{self.name} には\n"
         for material in self.materials:
             ret += f" {material.name} ({material.amount})\n"
         ret += "が入っている"
-        print(ret)
+        gprint(ret)
 
 
 class Pan(Container):
     def heating(self, level: Literal["弱火", "中火", "強火"]) -> None:
-        print(f"{level} で {self.name} を加熱した")
+        gprint(f"{level} で {self.name} を加熱した")
         sleep(120)
         for material in self.materials:
             material.name = f"{level} で加熱した {material.name}"
 
     def cooled(self) -> None:
-        print(f"{self.name} から粗熱を取った")
+        gprint(f"{self.name} から粗熱を取った")
         sleep(300)
         for material in self.materials:
             material.name = f"粗熱を取った {material.name}"
@@ -72,7 +76,7 @@ class Pan(Container):
 class Mixer(Container):
     def mix(self) -> None:
         super
-        print(f"{self.name} でミキサー処理した")
+        gprint(f"{self.name} でミキサー処理した")
         sleep(20)
         for material in self.materials:
             material.name = f"ミキサー処理した {material.name}"
@@ -83,7 +87,7 @@ class Grater:
         self.name = name
 
     def grate(self, material: Material) -> None:
-        print(f"{self.name} で {material.name} をすりおろした")
+        gprint(f"{self.name} で {material.name} をすりおろした")
         sleep(120)
         material.name = f"すりおろされた {material.name}"
 
