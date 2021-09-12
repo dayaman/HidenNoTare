@@ -75,7 +75,7 @@ class Pan(Container):
 
 class Mixer(Container):
     def mix(self) -> None:
-        super
+        super().mix()
         gprint(f"{self.name} でミキサー処理した")
         sleep(20)
         for material in self.materials:
